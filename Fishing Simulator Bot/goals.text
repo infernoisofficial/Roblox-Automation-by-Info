@@ -1,14 +1,18 @@
-Objective - Catch a fish using python script
+Objective - Catch a fish using python script (pyautogui)
 
-Steps. 
+Steps. (if fishing == true)
 1. click to throw the hook (no color condition, no location to click)
 2. click if u see cyan color -bubbles to pull the hook (no location to click)
-3. loop this (click if you see white color -at (x,y) coordinate)
-4. break loop if you see white color at (a,b) coordinate
-5. check if fishing == true , click to throw the hook (no color condition, no location to click)
+3. loop this (click fast (gap_interval = 5 milisecond) until you see a white color at region G (x,y) to (u,v) top left corner to bottom right corner)
+4. break loop if you see text at region H (a,b) to (c,d) top left corner to bottom right corner
+5. click to throw the hook (no color condition, no location to click)
 6. repeat from 2
 
 Extra things to note, 
-1. Add a toggle key (Q) to change state of fishing to false, and back to true
-2. Add color confidence/ color tolerance 
-3. starting condition = false
+- Add a toggle key (Q) to change state of fishing to false, or back to true
+- Add color confidence variable
+- starting state = false
+- CYAN_COLOR = (68, 252, 234)
+- WHITE_COLOR = (255, 255, 255)
+region G - (1017,820) to (1059,830)
+region H - (707,337) to (1239,369)
