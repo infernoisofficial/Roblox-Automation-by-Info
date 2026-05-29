@@ -1,0 +1,13 @@
+Objective - Catch a fish using python script
+
+Steps. 
+1. click to throw the hook (no color condition, no location to click)
+2. click if u see cyan color -bubbles to pull the hook (no location to click)
+3. loop this (click if you see white color -at (x,y) coordinate)
+4. break loop if you see white color at (a,b) coordinate
+5. check if fishing == true , click to throw the hook (no color condition, no location to click)
+6. repeat from 2
+
+Extra things to note, 
+1. Add a toggle key (Q) to change state of fishing to false, and back to true
+2. Add color confidence/ color tolerance 
