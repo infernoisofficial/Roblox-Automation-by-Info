@@ -11,3 +11,4 @@ Steps.
 Extra things to note, 
 1. Add a toggle key (Q) to change state of fishing to false, and back to true
 2. Add color confidence/ color tolerance 
+3. starting condition = false

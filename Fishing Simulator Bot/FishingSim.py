@@ -4,18 +4,18 @@ import pyautogui
 
 # --- CONFIGURATION ---
 # Replace these with your actual game coordinates
-CHECK_X, CHECK_Y = 500, 500  # Step 3 coordinate
-BREAK_X, BREAK_Y = 600, 600  # Step 4 coordinate
+CHECK_X, CHECK_Y = 933, 820  # Step 3 coordinate
+BREAK_X, BREAK_Y = 905, 350  # Step 4 coordinate
 
 # Colors in RGB format
-CYAN_COLOR = (0, 255, 255)
+CYAN_COLOR = (68, 252, 234)
 WHITE_COLOR = (255, 255, 255)
 
 # Color tolerance (0 means exact match, higher means more lenient)
-TOLERANCE = 20
+TOLERANCE = 4
 
 # Global state variable
-fishing_enabled = True
+fishing_enabled = False
 
 
 def color_matches(c1, c2, tolerance=TOLERANCE):
