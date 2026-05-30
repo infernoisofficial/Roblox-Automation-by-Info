@@ -3,18 +3,22 @@ Objective - Catch a fish using python script (pyautogui)
 Steps. (if fishing == true)
 1. Throw hook = click to throw the hook
 2. When to pull = click if u see cyan color -bubbles in the A region (a,b) to (c,d) 
-3. Reeling = click until you see a white color at (x,y), then pause. 
-4. Reel pause over - If you see white color at (u,v) then do Reeling ()
+3. Reeling = click until you see the right pixel of the marker having green color. Right side means x axis + 1
+4. Reeling pause = If right side turns Red then pause reeling. Wait for it to turn green and enable Reeling.
 4. Fish Caught = Stop reeling completely, when you see a green color disappear at (e,f). For it to disappear you hv to set a check at step 3 if you see a green color appear.
 5. repeat 2
 
-Extra things to note, 
+Things to note -
+- Clicks at reeling will have 10 millisecond  to avoid load
 - Add a toggle key (Q) to change state of fishing to false, or back to true
 - Add color confidence variable
+- Add image confidence variable
+- I will feed it an image of capsule-shaped marker as Marker.png at path D:\Games\Roblox-Automation-by-Info\Fishing Simulator Bot
 - starting state = false
 - CYAN_COLOR = (68, 252, 234)
 - WHITE_COLOR = (255, 255, 255)
 - GREEN_COLOR = (83,259,83)
+- RED_COLOR = (251, 98,76)
 - region A = (150,150) to (1710,893)
 - (x,y) = (1031,820)
 - (u,v) = (941,819)
