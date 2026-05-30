@@ -6,7 +6,7 @@ Steps. (if fishing == true)
 3. Reeling = Check if green_color appear at (e,f) with 100% confidence. Look for a Marker match from Marker.png in the region B(p,q) to (r,s). Lets say the coordinates of found-Marker is (x,y). From here you will check if sample_point which is (x+8,y+6) == green_color, If true You click until the sample_point remains green_color. We will need continous detection of Marker
 4. Reeling pause = If sample_point (x+8,y+6) becomes red_color then pause the reeling state. Keep a check on sample_point to turn green_color to enable Reeling.
 4. Fish Caught = Stop reeling completely, when you see a green color disappear at (e,f). For it to disappear you hv to set a check at step 3 that if you see green_color appear at (e,f) with 100% or high confidence.
-5. repeat 2
+5. repeat 1
 
 Things to note -
 - Clicks at Reeling will have 10 millisecond gap to avoid load
