@@ -1,12 +1,12 @@
 Objective - Catch a fish using python script (pyautogui)
 
 Steps. (if fishing == true)
-1. click to throw the hook (no color condition, no location to click)
-2. click if u see cyan color -bubbles to pull the hook (no location to click)
-3. loop this (click fast (gap_interval = 5 milisecond) until you see a white color at region G (x,y) to (u,v) top left corner to bottom right corner)
-4. break loop if you see text at region H (a,b) to (c,d) top left corner to bottom right corner
-5. click to throw the hook (no color condition, no location to click)
-6. repeat from 2
+1. Throw hook = click to throw the hook
+2. When to pull = click if u see cyan color -bubbles in the A region (a,b) to (c,d) 
+3. Reeling = click until you see a white color at (x,y), then pause. 
+4. Reel pause over - If you see white color at (u,v) then do Reeling ()
+4. Fish Caught = Stop reeling completely, when you see a green color disappear at (e,f). For it to disappear you hv to set a check at step 3 if you see a green color appear.
+5. repeat 2
 
 Extra things to note, 
 - Add a toggle key (Q) to change state of fishing to false, or back to true
@@ -14,5 +14,8 @@ Extra things to note,
 - starting state = false
 - CYAN_COLOR = (68, 252, 234)
 - WHITE_COLOR = (255, 255, 255)
-region G - (1017,820) to (1059,830)
-region H - (707,337) to (1239,369)
+- GREEN_COLOR = (83,259,83)
+- region A = (150,150) to (1710,893)
+- (x,y) = (1031,820)
+- (u,v) = (941,819)
+- (e,f) = (729,756)
