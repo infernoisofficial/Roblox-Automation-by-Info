@@ -2,26 +2,30 @@ Objective - Catch a fish using python script (pyautogui)
 
 Steps. (if fishing == true)
 1. Throw hook = click to throw the hook
-2. When to pull = click if u see cyan color -bubbles in the A region (a,b) to (c,d) 
-3. Reeling = click until you see the right pixel of the marker having green color. Right side means x axis + 1
-4. Reeling pause = If right side turns Red then pause reeling. Check for it to turn green and enable Reeling.
-4. Fish Caught = Stop reeling completely, when you see a green color disappear at (e,f). For it to disappear you hv to set a check at step 3 if you see a green color appear.
+2. When to pull = click only if u see cyan_color in the A region (a,b) to (c,d). cyan_color checking stops
+3. Reeling = Check if green_color appear at (e,f) with 100% confidence. Look for a Marker match from Marker.png in the region B(p,q) to (r,s). Lets say the coordinates of found-Marker is (x,y). From here you will check if sample_point which is (x+8,y+6) == green_color, If true You click until the sample_point remains green_color. We will need continous detection of Marker
+4. Reeling pause = If sample_point (x+8,y+6) becomes red_color then pause the reeling state. Keep a check on sample_point to turn green_color to enable Reeling.
+4. Fish Caught = Stop reeling completely, when you see a green color disappear at (e,f). For it to disappear you hv to set a check at step 3 that if you see green_color appear at (e,f) with 100% or high confidence.
 5. repeat 2
 
 Things to note -
-- Clicks at reeling will have 10 millisecond to avoid load
-- Add a toggle key (Q) to change state of fishing to false, or back to true
-- Add color confidence variable
-- Add image confidence variable
+- Clicks at Reeling will have 10 millisecond gap to avoid load
+- Add a toggle key Q to change state of fishing to switch between true and false
+- Add color confidence
+- Add image confidence
 - I will feed it an image of capsule-shaped marker as Marker.png at path D:\Games\Roblox-Automation-by-Info\Fishing Simulator Bot
-- starting state = false
+
+References
+- starting fishing state = false
+- reeling state = null
 - CYAN_COLOR = (68, 252, 234)
 - WHITE_COLOR = (255, 255, 255)
 - GREEN_COLOR = (83,259,83)
 - RED_COLOR = (251, 98,76)
-- region A = (150,150) to (1710,893)
-- (x,y) = (1031,820)
-- (u,v) = (941,819)
+- region A = (100,100) to (1750,950) of (a,b) to (c,d)
+- region B = (789,783) to (1155,882) of (p,q) to (r,s)
+- Marker = (x,y) or null
+- sample_point = (x+8,y+6)
 - (e,f) = (729,756)
 
 Comments for me - 
