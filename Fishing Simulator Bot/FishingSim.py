@@ -1,118 +1,128 @@
-import time
-import keyboard
 import pyautogui
+import keyboard
+import time
+from PIL import ImageGrab
 
-# --- Configuration & Coordinates ---
-CYAN_COLOR = (68, 252, 234)
-WHITE_COLOR = (255, 255, 255)
-GREEN_COLOR = (83, 255, 83)  # Adjusted 259 to 255 max RGB
+# --- CONFIGURATION & PATHS ---
+MARKER_IMAGE_PATH = r"D:\Games\Roblox-Automation-by-Info\Fishing Simulator Bot\Marker.png"
 
-# Region A: (x, y, width, height)
-# Left: 150, Top: 150, Width: 1710-150=1560, Height: 893-150=743
+# --- COORDINATES & REGIONS ---
+# Region A format for pyautogui: (left, top, width, height)
+# (150, 150) to (1710, 893) -> width = 1710-150 = 1560, height = 893-150 = 743
 REGION_A = (150, 150, 1560, 743)
 
+# Specific coordinate points
 POINT_XY = (1031, 820)
 POINT_UV = (941, 819)
 POINT_EF = (729, 756)
 
-# Performance Tuning
-COLOR_CONFIDENCE = 15  # Tolerance allowance for slight RGB variations
-LOOP_DELAY = 0.05  # Prevent 100% CPU usage
+# --- COLORS (RGB) ---
+CYAN_COLOR = (68, 252, 234)
+WHITE_COLOR = (255, 255, 255)
+GREEN_COLOR = (83, 255, 83)  # Fixed typo 259 to 255 (max RGB value)
+RED_COLOR = (251, 98, 76)
 
-# --- State Variables ---
+# --- CONFIDENCE & SETTINGS ---
+COLOR_TOLERANCE = 15  # Variable for color confidence allowance
+IMAGE_CONFIDENCE = 0.8
+CLICK_INTERVAL = 0.01  # 10 milliseconds delay
+
+# --- STATE MANAGEMENT ---
 fishing_active = False
-macro_running = True
+is_hook_thrown = False
+green_appeared = False
 
+def color_matches(c1, c2, tolerance=COLOR_TOLERANCE):
+    """Checks if two colors match within a specific tolerance/confidence range."""
+    return all(abs(a - b) <= tolerance for a, b in zip(c1, c2))
 
 def toggle_fishing():
     global fishing_active
     fishing_active = not fishing_active
-    print(f"\n[TOGGLE] Fishing is now: {'ENABLED' if fishing_active else 'DISABLED'}")
-    if fishing_active:
-        print("[STATUS] Starting fresh cycle. Casting hook...")
-        pyautogui.click()  # Step 1: Throw hook immediately on enable
-        time.sleep(1)
+    print(f"\n[TOGGLE] Fishing State changed! Active = {fishing_active}")
+    if not fishing_active:
+        print("[INFO] Bot paused. Press 'Q' to resume.")
 
-
-# Register the 'Q' key to toggle the state instantly
-keyboard.add_hotkey("q", toggle_fishing)
+# Register 'Q' as the toggle key
+keyboard.add_hotkey('q', toggle_fishing)
 
 print("=== Fishing Bot Initialized ===")
-print("Press 'Q' to Enable/Disable fishing.")
-print("Hold 'Ctrl+C' in terminal to completely exit.")
+print("Press 'Q' to Start/Pause the bot.")
 
-try:
-    while macro_running:
-        if not fishing_active:
-            time.sleep(0.2)  # Idle state wait
-            continue
+# --- MAIN LOOP ---
+while True:
+    # Small sleep to prevent high CPU utilization
+    time.sleep(0.05)
 
-        # ----------------------------------------------------
-        # Step 2: Look for Cyan bubbles in Region A
-        # ----------------------------------------------------
-        # Take a fast screenshot of just Region A
-        screen_sample = pyautogui.screenshot(region=REGION_A)
-        found_cyan = False
+    if not fishing_active:
+        continue
 
-        # Scan the screenshot for the cyan color (stepping by 10 pixels for speed)
-        for x in range(0, screen_sample.width, 10):
-            for y in range(0, screen_sample.height, 10):
-                r, g, b = screen_sample.getpixel((x, y))
-                
-                # Check if pixel color matches CYAN within confidence bounds
-                if (abs(r - CYAN_COLOR[0]) <= COLOR_CONFIDENCE and 
-                    abs(g - CYAN_COLOR[1]) <= COLOR_CONFIDENCE and 
-                    abs(b - CYAN_COLOR[2]) <= COLOR_CONFIDENCE):
-                    found_cyan = True
-                    break
-            if found_cyan:
+    # STEP 1: Throw Hook
+    if not is_hook_thrown:
+        print("[STEP 1] Throwing Hook...")
+        # Clicking inside Region A to throw the hook
+        pyautogui.click(x=960, y=540) 
+        is_hook_thrown = True
+        green_appeared = False
+        time.sleep(2) # Wait for hook animation to settle
+        print("[STEP 2] Waiting for Cyan bubbles in Region A...")
+
+    # STEP 2: Wait for Cyan bubbles to pull
+    else:
+        # Locate the capsule-shaped marker to ensure UI is ready
+        marker_pos = pyautogui.locateOnScreen(MARKER_IMAGE_PATH, confidence=IMAGE_CONFIDENCE)
+        
+        # Take a quick screenshot of Region A to search for cyan pixels
+        screen_a = ImageGrab.grab(bbox=(REGION_A[0], REGION_A[1], REGION_A[0] + REGION_A[2], REGION_A[1] + REGION_A[3]))
+        pixels = screen_a.getdata()
+        
+        cyan_detected = False
+        for px in pixels:
+            if color_matches(px, CYAN_COLOR):
+                cyan_detected = True
                 break
-
-        if found_cyan:
-            print("[Step 2] Cyan bubbles detected! Pulling the hook...")
-            pyautogui.click()
-            time.sleep(1.0)  # Wait briefly for reel UI to appear
-
-            green_was_seen = False
-
-            # ----------------------------------------------------
-            # Step 3 & 4: Reeling Loop
-            # ----------------------------------------------------
-            print("[Step 3/4] Entering Reeling phase...")
+        
+        if cyan_detected:
+            print("[BITE!] Cyan detected! Pulling hook...")
+            pyautogui.click() # Initial pull click
+            time.sleep(0.5)   # Wait for reeling UI to appear
+            
+            print("[STEP 3/4] Reeling Phase Started...")
+            # Reeling Loop
             while fishing_active:
-                
-                # Check for Green appearance at (e,f)
-                if pyautogui.pixelMatchesColor(POINT_EF[0], POINT_EF[1], GREEN_COLOR, tolerance=COLOR_CONFIDENCE):
-                    if not green_was_seen:
-                        print("[Step 5] Green color appeared at (e,f)!")
-                        green_was_seen = True
+                # Track if green color has appeared at (e,f) to initiate step 5 check
+                ef_pixel = pyautogui.pixel(POINT_EF[0], POINT_EF[1])
+                if color_matches(ef_pixel, GREEN_COLOR):
+                    green_appeared = True
 
-                # Step 5: Fish Caught condition (Green color disappears after being seen)
-                if green_was_seen:
-                    if not pyautogui.pixelMatchesColor(POINT_EF[0], POINT_EF[1], GREEN_COLOR, tolerance=COLOR_CONFIDENCE):
-                        print("[Step 5] Green color disappeared! Fish Caught!")
-                        time.sleep(1.5)  # Wait for catch animation to finish
-                        print("[Loop Reset] Casting hook for next fish...")
-                        pyautogui.click()  # Step 1: Throw hook again
-                        break  # Break reeling loop, returns to step 2 scanning
+                # STEP 5: Fish Caught Check (Green disappeared at e,f after appearing)
+                if green_appeared and not color_matches(ef_pixel, GREEN_COLOR):
+                    print("[SUCCESS] Green disappeared at (e,f). Fish Caught!")
+                    is_hook_thrown = False # Resets to step 1/repeat step 2
+                    time.sleep(1)
+                    break
 
-                # Check white color conditions for Reeling / Pausing
-                white_at_xy = pyautogui.pixelMatchesColor(POINT_XY[0], POINT_XY[1], WHITE_COLOR, tolerance=COLOR_CONFIDENCE)
-                white_at_uv = pyautogui.pixelMatchesColor(POINT_UV[0], POINT_UV[1], WHITE_COLOR, tolerance=COLOR_CONFIDENCE)
-
-                if white_at_xy:
-                    # White seen at (x,y) -> Pause reeling (do nothing/wait)
-                    time.sleep(LOOP_DELAY)
-                elif white_at_uv:
-                    # White seen at (u,v) -> Resume reeling click
-                    pyautogui.click()
-                else:
-                    # Default reeling behavior if neither condition overrides it
-                    pyautogui.click()
-
-                time.sleep(LOOP_DELAY)
-
-        time.sleep(LOOP_DELAY)
-
-except KeyboardInterrupt:
-    print("\nBot stopped safely via terminal interrupt.")
+                # STEP 3 & 4: Reeling and Pause Mechanics
+                # Locate marker to check dynamically on the x-axis
+                current_marker = pyautogui.locateOnScreen(MARKER_IMAGE_PATH, confidence=IMAGE_CONFIDENCE)
+                if current_marker:
+                    # 'Right side means x axis + 1' -> Looking at the pixel just right of the marker bounding box
+                    right_side_x = current_marker.left + current_marker.width + 1
+                    right_side_y = current_marker.top + (current_marker.height // 2)
+                    
+                    try:
+                        right_pixel = pyautogui.pixel(right_side_x, right_side_y)
+                        
+                        # Step 4: Reeling Pause if Right Side is Red
+                        if color_matches(right_pixel, RED_COLOR):
+                            # Do nothing, pause reeling
+                            time.sleep(0.05)
+                            continue
+                        
+                        # Step 3: Reel if Right Side is Green
+                        elif color_matches(right_pixel, GREEN_COLOR):
+                            pyautogui.click()
+                            time.sleep(CLICK_INTERVAL) # 10ms load delay
+                    except Exception:
+                        # Fail-safe if coordinates jump out of bounds temporarily
+                        pass

@@ -23,3 +23,6 @@ Things to note -
 - (x,y) = (1031,820)
 - (u,v) = (941,819)
 - (e,f) = (729,756)
+
+Comments for me - 
+& C:/Users/Tanveer/AppData/Local/Programs/Python/Python314/python.exe -m pip install pyautogui keyboard pillow opencv-python
