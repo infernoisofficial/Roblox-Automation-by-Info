@@ -7,7 +7,7 @@ Steps. (if fishing == true)
 4. Reeling = Do auto-clicking with interval = 50 ms. At timer_condition, If you see grey_color with 100% confidence at (g,h) then print "scope of green is available" only once and reset the checks for grey_color. 
 Take (g,h) point as new reference. We look for a change at (g,h); Also similarily, we reference RED_ZONE and look for any change. Therefore, 
 (i) Change condition = If scope of green = true, and you see grey_color with 100% confidence turn to any other color at (g,h), then print "scope of green is not available" once, exit loop, change scope of green = false and reset the checks for grey_color.
-(ii) Change condition = if scope of green = true, any one pixel among RED_ZONE turn white_color with 100% confidence, then enter Reeling pause, reset all the checks in RED_ZONE and stop auto-clicking. 
+(ii) Change condition = if scope of green = true, and any one pixel among RED_ZONE turn white_color with 100% confidence, then enter Reeling pause, reset all the checks in RED_ZONE and stop auto-clicking. 
 5. Fish caught = Stop reeling completely. 
 6. Reeling pause = No auto-clicking. Take GREEN_ZONE pixels as current reference. We wait until a change occurs. Change = if any one pixel among GREEN_ZONE turn white_color with 100% confidence, then enter Reeling, reset the checks.
 7. repeat 1
