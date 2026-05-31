@@ -26,7 +26,7 @@ References -
 - starting fishing state = false
 - reeling state = null
 - scope of green = null
-- CYAN_COLOR = (68, 252, 234)
+- BUBBLE_COLOR = (68, 252, 234) #cyan
 - WHITE_COLOR = (255, 255, 255)
 - GREY_COLOR = (188, 188, 188)
 - GREEN_COLOR = (83, 250, 83)

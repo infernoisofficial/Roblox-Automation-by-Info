@@ -8,7 +8,9 @@ from PIL import ImageGrab
 # REFERENCES & CONFIGURATION
 # ==========================================
 # Colors (RGB)
-CYAN_COLOR = (68, 252, 234)
+
+# BUBBLE_COLOR = (68, 252, 234) #cyan color
+BUBBLE_COLOR = (68, 252, 234) #magma color
 WHITE_COLOR = (255, 255, 255)
 GREY_COLOR = (188, 188, 188)
 GREEN_COLOR = (83, 250, 83)
@@ -20,13 +22,13 @@ REGION_A_BBOX = (100, 100, 1750, 950)
 
 # Reference points
 GH_POINT = (1193, 766)
-RED_ZONE = [(1106, 843), (1113, 845), (1120, 848), (1127, 850), (1133, 853), 
+RED_ZONE = [(1083,835),(1092,838),(1099,840),(1106, 843), (1113, 845), (1120, 848), (1127, 850), (1133, 853), 
             (1140, 856), (1147, 858), (1153, 861), (1160, 865), (1167, 869)]
-GREEN_ZONE = [(1002, 820), (996, 819), (988, 819)]
+GREEN_ZONE = [(1020,822),(1012,821),(1004, 820), (996, 819), (988, 819)]
 
 # Timer & Interval settings
 TIMER_CONDITION = 0.25       # 0.25 seconds
-CLICK_INTERVAL = 0.01        # 10 ms auto-clicking interval
+CLICK_INTERVAL = 0.05        # 10 ms auto-clicking interval
 
 # Bounding box for localized UI scanning (speeds up performance significantly)
 # Encompasses GREEN_ZONE, RED_ZONE, and GH_POINT
@@ -86,9 +88,9 @@ while True:
         
         # Look for matching cyan pixels inside Region A
         cyan_match = np.where(
-            (img_np[:, :, 0] == CYAN_COLOR[0]) & 
-            (img_np[:, :, 1] == CYAN_COLOR[1]) & 
-            (img_np[:, :, 2] == CYAN_COLOR[2])
+            (img_np[:, :, 0] == BUBBLE_COLOR[0]) & 
+            (img_np[:, :, 1] == BUBBLE_COLOR[1]) & 
+            (img_np[:, :, 2] == BUBBLE_COLOR[2])
         )
         
         if len(cyan_match[0]) > 0:
