@@ -34,7 +34,7 @@ GH_POINT = (1193, 766)  # Reference point (g, h)
 EF_POINT = (1208, 757)  # Reference point (e, f)
 
 # Timers and Intervals
-AUTO_CLICK_INTERVAL = 0.25  # 250 milliseconds
+AUTO_CLICK_INTERVAL = 0.025  # 250 milliseconds
 
 # ==============================================================================
 # TOGGLE MECHANISM

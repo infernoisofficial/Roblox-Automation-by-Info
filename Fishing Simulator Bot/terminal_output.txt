@@ -1,0 +1,22 @@
+
+====================================================
+  Python Auto-Fishing Script Initialized            
+  Press 'Q' to Toggle Fishing ON / OFF              
+====================================================
+
+[SYSTEM] Fishing Started. Script is active.
+
+Step 1: Throwing hook -> Clicking screen.
+Step 2: Monitoring Region A for cyan bubbles...
+Step 2: Change Detected! Cyan color pixels noticed.
+Step 3: Fish bit! Setting timer and clicking to initiate reel.
+Step 4: scope of green is available
+Step 4 -> Step 6: Reeling pause entered. Red zone pixel turned white.
+Step 6 -> Step 4: Reeling resumed. Green zone pixel turned white.
+Step 4: scope of green is available
+Step 4 -> Step 6: Reeling pause entered. Red zone pixel turned white.
+Step 6 -> Step 4: Reeling resumed. Green zone pixel turned white.
+Step 4: scope of green is available
+
+[SYSTEM] Fishing Paused. Script is idle.
+
