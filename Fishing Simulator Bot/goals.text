@@ -2,21 +2,25 @@ Objective - Catch a fish using a Python script (pyautogui)
 
 Steps. (if fishing == true)
 1. Throw hook = Click to throw the hook
-2. When to pull = Click if u see a "change". Change = Upon noticing of cyan_color pixels (bubbles) with 100% confidence in A region (a,b) to (c,d), then perform the click.
+2. When to pull = Click if u see a "change". Change = Upon noticing of cyan_color pixels (bubbles) with 100% confidence in A region (a,b) to (c,d).
 3. Set a timer.
-4. Reeling = Do auto-clicking with interval = 250 ms. At timer_condition, Begin with keeping two checks - If you see grey_color at (g,h) then print "scope of green is available" and we take (e,f) point as reference. We look for a change at (e,f); Also, we reference B region and begin looking for a change at B region (p,q) to (r,s). Therefore, (i) Change condition = When you see green_color at (e,f), then enter Fish caught, exit all reference points and stop auto-clicking.  Else if (ii) Change = If there's Decrease in red_color pixels by a margin_count or more AND increase in white_color pixels by a margin_count or more, then enter Reeling pause, exit all reference points and stop auto-clicking. 
+4. Reeling = Do auto-clicking with interval = 250 ms. At timer_condition, If you see grey_color at (g,h) then print "scope of green is available" only once and exit checking for grey_color. 
+Take (e,f) point as reference. We look for a change at (e,f); Also similarily, we reference RED_ZONE and look for any change. Therefore, 
+(i) Change condition = When you see green_color at (e,f), then enter Fish caught, exit checking and stop auto-clicking. 
+(ii) Change condition = When you see white_color at any coordinates of RED_ZONE, then enter Reeling pause, exit checking and stop auto-clicking. 
 5. Fish caught = Stop reeling completely. Change condition = When you see green_color at (e,f). You exit loop
-6. Reeling pause = Everytime we enter Reeling pause, we setup (i,j) as reference point. Then we look for a change at (i,j). Change = if pixel (i,j) turn white_color, then enter Reeling and exit reference points.
+6. Reeling pause = Take (i,j) as reference. Then we look for a change at (i,j). Change = if pixel (i,j) turn white_color, then enter Reeling and exit reference points.
 7. repeat 1
 
 Things to note -
+- All variables names will given their separate new checkpoints/ reference points. We reset checks after every Fish caught.
 - Add a toggle key Q to change state of fishing to switch between true and false
 - "change" means we are not scanning everytime to check. We are just looking for a change
-- In Reeling, There's two phases that can happen during auto-clicking so the code has to be light so the autoclicking doesnt slow down code
-- In first phase, we already found the fish so no need to reel, so we exit loop.
-- In second phase, we have taken a pause as we look for a signal to resume reeling.
-- In second phase, We cycle/loop between Reeling to Reeling pause back to Reeling. This goes on until the Fish Caught conditions are met.
-- Make a clear references section of variables, etc
+- In Reeling, There's two conditions that can take place during auto-clicking, So the conditions have the power to interrupt auto-clicking.
+- In first condition, we found the fish so no need to reel, so we exit loop.
+- In second condition, We cycle/loop between Reeling to Reeling pause back to Reeling. This goes on until the Fish Caught conditions are met.
+- Make a clear references section of variables, etc.
+- When printing statements in terminal, each step should be numbered to be easier to track.
 
 References - 
 
@@ -29,7 +33,7 @@ References -
 - RED_COLOR = (251, 98, 76)
 - color confidence = default set to 100% (range 0 to 1)
 - region A = (100,100) to (1750,950) of (a,b) to (c,d)
-- region B = (1080,798) to (1171,892) of (p,q) to (r,s)
+- list of RED_ZONE = [(1106,843), (1113, 845), (1120,848), (1127, 850), (1133,853), (1140,856), (1147,858), (1153,861), (1160, 865), (1167,869)]
 - timer condition = 0.25 sec
 - auto-clicking interval = 250 millisecond
 - margin_count = 100 pixels 
