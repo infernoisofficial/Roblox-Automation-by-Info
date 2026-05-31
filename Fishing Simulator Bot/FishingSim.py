@@ -27,7 +27,7 @@ PT_IJ = (1002, 820)  # rest_location
 
 # Conditions & Intervals
 TIMER_CONDITION = 0.25  # 250 milliseconds
-AUTOCLICK_INTERVAL = 0.05  # 50 milliseconds
+AUTOCLICK_INTERVAL = 0.15  # 50 milliseconds
 MARGIN_COUNT = 100  # Pixel threshold
 
 # Global States

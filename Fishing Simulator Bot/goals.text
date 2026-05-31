@@ -4,7 +4,7 @@ Steps. (if fishing == true)
 1. Throw hook = Click to throw the hook
 2. When to pull = Click if u see a "change". Change = Upon noticing of cyan_color pixels (bubbles) with 100% confidence in A region (a,b) to (c,d), then perform the click.
 3. Set a timer.
-4. Reeling = Do auto-clicking with interval = 50 milisecond. At timer_condition (i) Begin with keeping a check - If you see grey_color at (g,h), then print "scope of green is available" and we take (e,f) point as reference. Only then we look for a change at (e,f). Change condition = When you see green_color at (e,f), then enter Fish caught and stop auto-clicking. (ii) Also, begin looking for a change at B region (p,q) to (r,s). Change = If there's Decrease in red_color pixels by a margin_count or more AND increase in white_color pixels by a margin_count or more, then enter Reeling pause, exit all reference points and stop auto-clicking. 
+4. Reeling = Do auto-clicking with interval = 250 ms. At timer_condition, Begin with keeping two checks - If you see grey_color at (g,h) then print "scope of green is available" and we take (e,f) point as reference. We look for a change at (e,f); Also, we reference B region and begin looking for a change at B region (p,q) to (r,s). Therefore, (i) Change condition = When you see green_color at (e,f), then enter Fish caught, exit all reference points and stop auto-clicking.  Else if (ii) Change = If there's Decrease in red_color pixels by a margin_count or more AND increase in white_color pixels by a margin_count or more, then enter Reeling pause, exit all reference points and stop auto-clicking. 
 5. Fish caught = Stop reeling completely. Change condition = When you see green_color at (e,f). You exit loop
 6. Reeling pause = Everytime we enter Reeling pause, we setup (i,j) as reference point. Then we look for a change at (i,j). Change = if pixel (i,j) turn white_color, then enter Reeling and exit reference points.
 7. repeat 1
@@ -31,7 +31,7 @@ References -
 - region A = (100,100) to (1750,950) of (a,b) to (c,d)
 - region B = (1080,798) to (1171,892) of (p,q) to (r,s)
 - timer condition = 0.25 sec
-- auto-clicking interval = 50 millisecond to avoid load
+- auto-clicking interval = 250 millisecond
 - margin_count = 100 pixels 
 - (g,h) = (1193,766)
 - (e,f) = (1208,757)
