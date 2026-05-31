@@ -4,12 +4,12 @@ Steps. (if fishing == true)
 1. Throw hook = Click to throw the hook
 2. When to pull = Click if u see a "change". Change = Upon noticing of cyan_color pixels (bubbles) with 100% confidence in A region (a,b) to (c,d).
 3. Set a timer.
-4. Reeling = Do auto-clicking with interval = 250 ms. At timer_condition, If you see grey_color at (g,h) then print "scope of green is available" only once and exit checking for grey_color. 
+4. Reeling = Do auto-clicking with interval = 250 ms. At timer_condition, If you see grey_color at (g,h) then print "scope of green is available" only once and reset the checks for grey_color. 
 Take (e,f) point as reference. We look for a change at (e,f); Also similarily, we reference RED_ZONE and look for any change. Therefore, 
-(i) Change condition = When you see green_color at (e,f), then enter Fish caught, exit checking and stop auto-clicking. 
-(ii) Change condition = When you see white_color at any coordinates of RED_ZONE, then enter Reeling pause, exit checking and stop auto-clicking. 
+(i) Change condition = if (e,f) turn green_color with 100% confidence, then enter Fish caught, exit checking and stop auto-clicking. 
+(ii) Change condition = if any one pixel among RED_ZONE turn white_color with 100% confidence, then enter Reeling pause, reset the checks and stop auto-clicking. 
 5. Fish caught = Stop reeling completely. Change condition = When you see green_color at (e,f). You exit loop
-6. Reeling pause = Take (i,j) as reference. Then we look for a change at (i,j). Change = if pixel (i,j) turn white_color, then enter Reeling and exit reference points.
+6. Reeling pause = No auto-clicking. Take GREEN_ZONE pixels as current reference. We wait until a change occurs. Change = if any one pixel among GREEN_ZONE turn white_color with 100% confidence, then enter Reeling, reset the checks.
 7. repeat 1
 
 Things to note -
@@ -33,13 +33,13 @@ References -
 - RED_COLOR = (251, 98, 76)
 - color confidence = default set to 100% (range 0 to 1)
 - region A = (100,100) to (1750,950) of (a,b) to (c,d)
-- list of RED_ZONE = [(1106,843), (1113, 845), (1120,848), (1127, 850), (1133,853), (1140,856), (1147,858), (1153,861), (1160, 865), (1167,869)]
+- list RED_ZONE = [(1106,843), (1113, 845), (1120,848), (1127, 850), (1133,853), (1140,856), (1147,858), (1153,861), (1160, 865), (1167,869)]
+- list GREEN_ZONE = [(1002,820),(996,819),(988,819)]
 - timer condition = 0.25 sec
 - auto-clicking interval = 250 millisecond
 - margin_count = 100 pixels 
 - (g,h) = (1193,766)
 - (e,f) = (1208,757)
-- (i,j) = (1002,820) = rest_location
 
 Comments for me - 
 & C:/Users/Tanveer/AppData/Local/Programs/Python/Python314/python.exe -m pip install pyautogui keyboard pillow opencv-python
