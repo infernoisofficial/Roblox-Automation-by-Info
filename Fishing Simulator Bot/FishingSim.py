@@ -2,11 +2,13 @@ import time
 import keyboard
 import numpy as np
 import pyautogui
+from PIL import ImageGrab
 
-# --- Configuration & Constants ---
-pyautogui.PAUSE = 0  # Removes default pyautogui delay for fast clicking
-pyautogui.FAILSAFE = True  # Move mouse to upper-left corner to abort script
+# --- CONFIGURATION & PERFORMANCE TUNING ---
+pyautogui.PAUSE = 0  # Removes the default PyAutoGUI delay to maximize click speed
+pyautogui.FAILSAFE = True  # Move mouse to any corner of the screen to abort script
 
+# --- REFERENCES SECTION ---
 # Colors (R, G, B)
 CYAN_COLOR = (68, 252, 234)
 WHITE_COLOR = (255, 255, 255)
@@ -14,146 +16,144 @@ GREY_COLOR = (188, 188, 188)
 GREEN_COLOR = (83, 250, 83)
 RED_COLOR = (251, 98, 76)
 
-# Script State
+# Regions (left, top, right, bottom)
+REGION_A = (100, 100, 1750, 950)
+REGION_B = (1080, 798, 1171, 892)
+
+# Specific Coordinate Points (x, y)
+PT_GH = (1193, 766)
+PT_EF = (1208, 757)
+PT_IJ = (1002, 820)  # rest_location
+
+# Conditions & Intervals
+TIMER_CONDITION = 0.25  # 250 milliseconds
+AUTOCLICK_INTERVAL = 0.05  # 50 milliseconds
+MARGIN_COUNT = 100  # Pixel threshold
+
+# Global States
 fishing = False
+state = "THROW"  # Internal states: THROW, WAIT_BITE, REELING, REELING_PAUSE
+
+# --- HELPER FUNCTIONS ---
 
 
 def toggle_fishing():
-    global fishing
+    global fishing, state
     fishing = not fishing
-    print(f"\n--- Fishing State Changed: {'ENABLED' if fishing else 'DISABLED'} ---")
     if fishing:
-        print("Starting fishing cycle...")
-    time.sleep(0.3)  # Debounce delay
+        state = "THROW"
+        print("[SYSTEM] Fishing Started (State: True)")
+    else:
+        print("[SYSTEM] Fishing Stopped (State: False)")
 
 
-# Register the toggle key 'Q'
+def count_pixels(img, target_color):
+    """Counts exact matching color pixels using NumPy for extreme speed."""
+    arr = np.array(img)
+    mask = np.all(arr == target_color, axis=-1)
+    return np.sum(mask)
+
+
+def color_exists(img, target_color):
+    """Checks if at least one pixel matches the target color."""
+    arr = np.array(img)
+    return np.any(np.all(arr == target_color, axis=-1))
+
+
+# Register Hotkey Toggle (Press 'Q' to turn on/off)
 keyboard.add_hotkey("q", toggle_fishing)
 
-print("=== Fishing Bot Initialized ===")
-print("Press 'Q' to Toggle Fishing ON/OFF")
-print("Move mouse to the top-left corner of the screen to Emergency Stop")
+print("==============================================")
+print("  FISHING BOT READY. Press 'Q' to Toggle ON/OFF  ")
+print("==============================================")
 
-# --- Main Program Loop ---
+# Timing variables
+last_click_time = 0
+last_timer_check = 0
+
+# Baseline trackers for Region B
+baseline_red = 0
+baseline_white = 0
+
+# --- MAIN LOOP ---
 while True:
+    # If fishing is toggled off, idle without consuming CPU
     if not fishing:
         time.sleep(0.1)
         continue
 
-    # Step 1: Throw hook
-    print("Action: Throwing Hook...")
-    pyautogui.click()
-    time.sleep(1.0)  # Wait for hook animation to settle before scanning
+    current_time = time.time()
 
-    # Step 2: Wait for Bite (Look for Cyan pixels in Region A)
-    print("Status: Waiting for bite (Scanning Region A)...")
-    bite_detected = False
+    # STEP 1: Throw Hook
+    if state == "THROW":
+        print("Throwing hook...")
+        pyautogui.click()
+        time.sleep(1.0)  # Short pause to allow hook throwing animation to begin
+        state = "WAIT_BITE"
 
-    while fishing and not bite_detected:
-        # Region A: (100, 100) to (1750, 950) -> width=1650, height=850
-        screenshot_a = pyautogui.screenshot(region=(100, 100, 1650, 850))
-        img_a = np.array(screenshot_a)
+    # STEP 2: Wait for Bite (Region A)
+    elif state == "WAIT_BITE":
+        img_a = ImageGrab.grab(bbox=REGION_A)
+        if color_exists(img_a, CYAN_COLOR):
+            print("Bite detected! Hooking fish...")
+            pyautogui.click()
 
-        # Vectorized check for CYAN color matches
-        cyan_mask = (
-            (img_a[:, :, 0] == CYAN_COLOR[0])
-            & (img_a[:, :, 1] == CYAN_COLOR[1])
-            & (img_a[:, :, 2] == CYAN_COLOR[2])
-        )
+            # Initialize Reeling Phase Reference Points
+            img_b = ImageGrab.grab(bbox=REGION_B)
+            baseline_red = count_pixels(img_b, RED_COLOR)
+            baseline_white = count_pixels(img_b, WHITE_COLOR)
 
-        if np.any(cyan_mask):
-            print("Status: Bite Detected! Hooking...")
-            pyautogui.click()  # Click to lock the bite
-            bite_detected = True
-            time.sleep(0.2)  # Short delay to transition into reeling phase
+            last_click_time = current_time
+            last_timer_check = current_time
+            state = "REELING"
 
-    # Step 4, 5, 6: Reeling and Reeling Pause System
-    if fishing and bite_detected:
-        print("Status: Entering Reeling Phase...")
+    # STEP 4: Reeling Phase (Auto-clicking running)
+    elif state == "REELING":
+        # Auto-clicking handling (Every 50ms)
+        if current_time - last_click_time >= AUTOCLICK_INTERVAL:
+            pyautogui.click()
+            last_click_time = current_time
 
-        # Setup localized bounding box containing Region B, (g,h), and (e,f)
-        # Min X = 1080, Max X = 1208 -> Capture width 140 (up to 1220)
-        # Min Y = 757, Max Y = 892  -> Capture height 150 (from 750 to 900)
-        box_x, box_y, box_w, box_h = 1080, 750, 140, 150
+        # Condition (i): Timer condition check (Every 250ms)
+        if current_time - last_timer_check >= TIMER_CONDITION:
+            last_timer_check = current_time
 
-        # Function to capture the unified bounding box and return pixel information
-        def get_game_data():
-            img = np.array(pyautogui.screenshot(region=(box_x, box_y, box_w, box_h)))
+            if pyautogui.pixelMatchesColor(PT_GH[0], PT_GH[1], GREY_COLOR):
+                print("Scope of green is available")
 
-            # 1. Extract specific point values using relative offsets
-            # (g,h) = (1193, 766) -> Relative: x=113, y=16
-            color_gh = tuple(img[16, 113])
+                # Step 5: Check if Fish is caught
+                if pyautogui.pixelMatchesColor(PT_EF[0], PT_EF[1], GREEN_COLOR):
+                    print("Fish caught! Resetting loop...")
+                    state = "THROW"  # Loop back to Step 1
+                    time.sleep(1.5)  # Wait for catch animation before casting again
+                    continue
 
-            # (e,f) = (1208, 757) -> Relative: x=128, y=7
-            color_ef = tuple(img[7, 128])
+        # Condition (ii): Region B pixel tracking
+        img_b = ImageGrab.grab(bbox=REGION_B)
+        current_red = count_pixels(img_b, RED_COLOR)
+        current_white = count_pixels(img_b, WHITE_COLOR)
 
-            # 2. Extract Region B patch -> (1080,798) to (1171,892)
-            # Relative: Y from (798-750)=48 to (892-750)=142 | X from (1080-1080)=0 to (1171-1080)=91
-            b_patch = img[48:142, 0:91]
-            red_mask = (
-                (b_patch[:, :, 0] == RED_COLOR[0])
-                & (b_patch[:, :, 1] == RED_COLOR[1])
-                & (b_patch[:, :, 2] == RED_COLOR[2])
-            )
-            white_mask = (
-                (b_patch[:, :, 0] == WHITE_COLOR[0])
-                & (b_patch[:, :, 1] == WHITE_COLOR[1])
-                & (b_patch[:, :, 2] == WHITE_COLOR[2])
-            )
+        decrease_red = baseline_red - current_red
+        increase_white = current_white - baseline_white
 
-            return color_gh, color_ef, np.sum(red_mask), np.sum(white_mask)
+        if decrease_red >= MARGIN_COUNT and increase_white >= MARGIN_COUNT:
+            print("Reeling pause triggered. Clearing references.")
+            state = "REELING_PAUSE"
 
-        # Initialize base state
-        reeling_state = "reeling"
-        _, _, base_red, base_white = get_game_data()
+    # STEP 6: Reeling Pause Phase (Auto-clicking stopped)
+    elif state == "REELING_PAUSE":
+        # Monitor rest location point (i, j) for white color change
+        if pyautogui.pixelMatchesColor(PT_IJ[0], PT_IJ[1], WHITE_COLOR):
+            print("Resuming Reeling. Re-establishing baseline references.")
 
-        last_click_time = time.time()
-        last_check_time = time.time()
+            # Re-establish clean reference baselines for Region B upon exit
+            img_b = ImageGrab.grab(bbox=REGION_B)
+            baseline_red = count_pixels(img_b, RED_COLOR)
+            baseline_white = count_pixels(img_b, WHITE_COLOR)
 
-        # Inner loop tracking the reel progression
-        while fishing:
-            current_time = time.time()
+            last_click_time = current_time
+            last_timer_check = current_time
+            state = "REELING"
 
-            # 50 millisecond Autoclicker execution
-            if reeling_state == "reeling" and (current_time - last_click_time) >= 0.1:
-                pyautogui.click()
-                last_click_time = current_time
-
-            # 0.25 second Condition Check Execution (Timer Condition)
-            if (current_time - last_check_time) >= 0.25:
-                last_check_time = current_time
-
-                # Fetch pixel states inside the targeted boundary box
-                color_gh, color_ef, red_count, white_count = get_game_data()
-
-                # Condition (i): Fish Caught Tracking
-                if color_gh == GREY_COLOR:
-                    print("scope of green is available")
-                    if color_ef == GREEN_COLOR:
-                        print("Fish caught!")
-                        break  # Breaks out of reeling state machine to reset to step 1
-
-                # Condition (ii): State transitions based on Region B shifts
-                if reeling_state == "reeling":
-                    # Look for decrease in red AND increase in white by 100 pixels
-                    if (base_red - red_count >= 100) and (
-                        white_count - base_white >= 100
-                    ):
-                        print("Reeling pause")
-                        reeling_state = "pause"
-                        base_red, base_white = red_count, white_count
-
-                elif reeling_state == "pause":
-                    # Look for increase in red AND decrease in white by 100 pixels
-                    if (red_count - base_red >= 100) and (
-                        base_white - white_count >= 100
-                    ):
-                        print("Reeling")
-                        reeling_state = "reeling"
-                        base_red, base_white = red_count, white_count
-
-            # Tiny sleep to avoid CPU pinning without harming click intervals
-            time.sleep(0.001)
-
-    print("Cycle complete. Restarting in 2 seconds...")
-    time.sleep(2.0)
+    # Small micro-sleep to prevent the script from thrashing a single CPU core thread
+    time.sleep(0.001)
