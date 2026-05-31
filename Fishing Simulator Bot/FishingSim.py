@@ -26,7 +26,7 @@ GREEN_ZONE = [(1002, 820), (996, 819), (988, 819)]
 
 # Timer & Interval settings
 TIMER_CONDITION = 0.25       # 0.25 seconds
-CLICK_INTERVAL = 0.05        # 50 ms auto-clicking interval
+CLICK_INTERVAL = 0.01        # 10 ms auto-clicking interval
 
 # Bounding box for localized UI scanning (speeds up performance significantly)
 # Encompasses GREEN_ZONE, RED_ZONE, and GH_POINT
