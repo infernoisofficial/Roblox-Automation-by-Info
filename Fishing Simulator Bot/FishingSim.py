@@ -9,8 +9,8 @@ from PIL import ImageGrab
 # ==========================================
 # Colors (RGB)
 
-BUBBLE_COLOR = (68, 252, 234) #normal color
-#BUBBLE_COLOR = (253, 95, 10) #magma color (eruption island)
+#BUBBLE_COLOR = (68, 252, 234) #normal color
+BUBBLE_COLOR = (253, 95, 10) #magma color (eruption island)
 #BUBBLE_COLOR = (225, 109, 255) #purple neon color (eruption island)
 WHITE_COLOR = (255, 255, 255)
 GREY_COLOR = (188, 188, 188)
